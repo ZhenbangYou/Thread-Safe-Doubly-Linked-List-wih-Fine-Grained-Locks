@@ -3,10 +3,10 @@ import scala.annotation.tailrec
 
 
 class SyncList[T](implicit f: T => Ordered[T]) {
-    case class Node(value: T,
-                    var prev: Option[Node] = None,
-                    var next: Option[Node] = None,
-                    lock: Lock = new ReentrantLock())
+    private case class Node(value: T,
+                            var prev: Option[Node] = None,
+                            var next: Option[Node] = None,
+                            lock: Lock = new ReentrantLock())
 
     private var head: Option[Node] = None
     private val listLock: Lock = new ReentrantLock()
