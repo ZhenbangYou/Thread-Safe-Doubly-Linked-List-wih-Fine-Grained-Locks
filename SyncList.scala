@@ -1,4 +1,5 @@
 import java.util.concurrent.locks.{Lock, ReentrantLock}
+import scala.annotation.tailrec
 
 
 class SyncList[T](implicit f: T => Ordered[T]) {
@@ -148,5 +149,24 @@ class SyncList[T](implicit f: T => Ordered[T]) {
                 }
                 throw new Exception("should not reach here")
         }
+    }
+
+    def toList: List[T] = {
+        listLock.lock()
+        val res = collection.mutable.ArrayBuffer[T]()
+
+        @tailrec
+        def traverse(cur: Option[Node]): Unit = {
+            cur match {
+                case None => ()
+                case Some(cur) =>
+                    res.append(cur.value)
+                    traverse(cur.next)
+            }
+        }
+
+        traverse(head)
+        listLock.unlock()
+        res.toList
     }
 }
